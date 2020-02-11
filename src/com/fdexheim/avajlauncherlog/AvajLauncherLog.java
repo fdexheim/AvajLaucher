@@ -7,16 +7,14 @@ import java.io.IOException;
 public class	AvajLauncherLog {
 	private static FileWriter		fWriter;
 	private static boolean			backupStdout = true;
-	public static AvajLauncherLog	logger = null;
+	private static AvajLauncherLog	logger = new AvajLauncherLog();
 
 	public static AvajLauncherLog	getLog() {
 		return (logger);
 	}
 
-	public							AvajLauncherLog(String logFile) throws BadFileAccessException {
-		if (logger != null)
-			throw new BadFileAccessException("Attempt to instatiate a second logger");
-		setupLog(logFile);
+	public							AvajLauncherLog() {
+		logger = this;
 	}
 
 	public void		toggleBackupStdout(boolean status) {
@@ -27,18 +25,18 @@ public class	AvajLauncherLog {
 		try {
 			fWriter = new FileWriter(logFile);
 			toggleBackupStdout(false);
-			fWriter.write(" == Start of Log ==\n");
 		}
 		catch (IOException e) {
 			toggleBackupStdout(true);
-			System.out.print("Failed to setup log file, will be outputting to stdout instead");
+			System.out.print("[WARNING] Failed to setup log file, will be outputting to stdout instead\n");
 		}
 	}
 
 	public void						addLog(String line) {
 		try {
-			if (backupStdout == true)
-				System.out.println(line);
+			if (backupStdout == true) {	
+				System.out.print(line);
+			}
 			else
 				fWriter.write(line);
 		}
@@ -49,10 +47,11 @@ public class	AvajLauncherLog {
 
 	public static void				closeLog() {
 		try {
-			fWriter.close();
+			if (backupStdout == false)
+				fWriter.close();
 		}
 		catch (IOException e) {
-			
+			e.printStackTrace();	
 		}
 		logger = null;
 	}

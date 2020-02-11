@@ -1,14 +1,16 @@
 package src.com.fdexheim;
 
 import src.com.fdexheim.avajlauncherflyers.Flyable;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class Tower
 {
-	private Vector<Flyable>			observers;
+	private ArrayList<Flyable>			observers;
+	private ArrayList<Flyable>			landingFlyers;
 
 	public Tower() {
-		observers = new Vector<Flyable>();
+		observers = new ArrayList<>();
+		landingFlyers = new ArrayList<>();
 	}
 
 	public void register(Flyable flyable) {
@@ -16,11 +18,20 @@ public class Tower
 	}
 
 	public void unregister(Flyable flyable) {
-		observers.removeElement(flyable);
-		flyable = null;
+		landingFlyers.add(flyable);
 	}
 
-	protected void conditionsChanged() {
+	private void			removeLandingFlyers() {
+		for (Flyable o : landingFlyers) {
+			observers.remove(o);
+		}
+		landingFlyers.clear();
+	}
 
+	protected void			conditionsChanged() {
+		for (Flyable o : observers) {
+			o.updateConditions();
+		}
+		removeLandingFlyers();
 	}
 }

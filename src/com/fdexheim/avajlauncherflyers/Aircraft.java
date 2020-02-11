@@ -1,7 +1,5 @@
 package src.com.fdexheim.avajlauncherflyers;
 
-import src.com.fdexheim.Coordinates;
-
 public abstract class Aircraft {
 	protected long		id;
 	protected String		name;

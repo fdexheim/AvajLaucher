@@ -10,10 +10,9 @@ import src.com.fdexheim.avajlauncherexceptions.AvajLauncherException;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.lang.Integer;
 import java.lang.NumberFormatException;
-
-//import javax.print.attribute.standard.PrinterURI;
 
 public class Simulator
 {
@@ -28,32 +27,25 @@ public class Simulator
 		System.out.println("Usage : add a single parsable file as a single argument");
 	}
 
-	private static int				parseIters() {
+	private static int				parseIters() throws BadScenarioFileException {
 		String				line;
 		int					ret;
 
+		line = null;
 		try {
 			line = lineReader.readLine();
 			ret = Integer.parseInt(line);
 		} catch (IOException e) {
-			e.printStackTrace();
 			ret = -1;
 		} catch (NumberFormatException e) {
-			e.printStackTrace();
 			ret = -1;
 		}
+		if (ret < 0)
+			throw new BadScenarioFileException("Invalid Scenario File : Iteration number '" + line + "' is either badly fornatted or below zero");
 		return (ret);
 	}
 
-/*	private static boolean			checkAircraftType(String type) throws BadScenarioFileException {
-		for (String s : aircraftTypes) {
-			if (s.equals(type) == true)
-				return true;
-		}
-		throw new BadScenarioFileException("Invalid Scenario file : Unknown Aircraft type");
-	}
-*/
-	private static void				parseAircrafts() throws BadScenarioFileException, BadFileAccessException {
+	private static void				parseAircrafts() throws BadScenarioFileException, BadFileAccessException, BadAircraftTypeException {
 		String						line;
 		String[]					splitLine;
 		String						type;
@@ -62,21 +54,15 @@ public class Simulator
 		int							latitude;
 		int							height;
 		Flyable						add;
-
 		int							lineNumber = 1;
 
 		try {
 			while ((line = lineReader.readLine()) != null) {
-
-		System.out.print("[Command parse iteration : ");
-		System.out.print(Integer.toString(lineNumber));
-		System.out.print("]\n");
-		lineNumber++;
-
+				lineNumber++;
 				splitLine = line.split(" ");
 				if (splitLine.length != 5)
-					throw new BadScenarioFileException("Invalid Scenario file : Incorrect number of arguments for aircraft creation");
-				try {
+					throw new BadScenarioFileException("Invalid Scenario file : Incorrect number of arguments for aircraft creation, requires 5, have " + Integer.toString(splitLine.length));
+				try { 
 					type = splitLine[0];
 					name = splitLine[1];
 					longitude = Integer.parseInt(splitLine[2]);
@@ -86,12 +72,12 @@ public class Simulator
 					add = AircraftFactory.newAircraft(type, name, longitude, latitude, height);
 					add.registerTower(weatherTower);
 
-					if (longitude < 0 || latitude < 0 || height < 0 ) // what about height > 100 ?
-						throw new BadScenarioFileException ("Invalid Scenario file : One of the starting coordinates is invalid");
+					if (longitude < 0 || latitude < 0 || height < 0 )
+						throw new BadScenarioFileException ("Invalid Scenario file : line " + Integer.toString(lineNumber) + " : One of the starting coordinates is invalid");
 				} catch (NumberFormatException e) {
-					throw new BadScenarioFileException("Invalid Scenario file : One of the starting coordinates is invalid");
+					throw new BadScenarioFileException("Invalid Scenario file : line " + Integer.toString(lineNumber) + " : One of the starting coordinates is invalid");
 				} catch (BadAircraftTypeException e) {
-					throw new BadScenarioFileException("Invalid Scenario file : One of the Aircrafts is of an unknown type");
+					throw new BadAircraftTypeException("Invalid Scenario file : line " + Integer.toString(lineNumber) + " : " + splitLine[0] + " is not a know aircraft type");
 				}
 			}
 		} catch (IOException e) {
@@ -101,18 +87,15 @@ public class Simulator
 
 	private static void		runSimulation() {
 		int					i;
-		i = 1;
 
+		i = 1;
 		while (i <= simulatorIterations) {
-			System.out.print("[Run Iteration : ");
-			System.out.print(Integer.toString(i));
-			System.out.print("]\n");
+			weatherTower.changeWeather();
 			weatherTower.conditionsChanged();
 			i++;
 		}
 	}
 
-	// ARGS[0] in java == ARGV[1] in c !!!!
 	public static void		main(String[] args) {
 		if (args.length == 0) {
 			usage();
@@ -123,12 +106,7 @@ public class Simulator
 			System.out.println("Arguments after the first will be ignored...");
 		}
 
-		try {
-			AvajLauncherLog.logger = new AvajLauncherLog("Simulation.txt");
-		} catch (BadFileAccessException e) {
-			e.printStackTrace();
-		}
-
+		AvajLauncherLog.getLog().setupLog("Simulation.txt");
 		try {
 			weatherTower = new WeatherTower();
 			simulationFile = new FileReader(args[0]);
@@ -136,18 +114,22 @@ public class Simulator
 			simulatorIterations = parseIters();
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.exit(-1);
+		} catch (BadScenarioFileException e) {
+			e.printStackTrace();
+			System.exit(-1);
 		}
-		System.out.print("Iterations : ");
-		System.out.print(Integer.toString(simulatorIterations));
-		System.out.print("\n");
 		try {
 			parseAircrafts();
 		} catch (BadScenarioFileException e) {
 			e.printStackTrace();
-			System.exit(0);
+			System.exit(-1);
 		} catch (BadFileAccessException e) {
 			e.printStackTrace();
-			System.exit(0);
+			System.exit(-1);
+		} catch (BadAircraftTypeException e) {
+			e.printStackTrace();
+			System.exit(-1);
 		}
 		runSimulation();
 		AvajLauncherLog.getLog().closeLog();

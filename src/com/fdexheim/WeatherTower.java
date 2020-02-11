@@ -1,6 +1,7 @@
 package src.com.fdexheim;
 
 import src.com.fdexheim.WeatherProvider;
+import src.com.fdexheim.avajlauncherflyers.Coordinates;
 
 public class WeatherTower extends Tower
 {
@@ -11,7 +12,7 @@ public class WeatherTower extends Tower
 	public String		getWeather(Coordinates coordinates) {
 		return (WeatherProvider.getCurrentWeather(coordinates));
 	}
-	protected void		changeWeather() {
-		
+	void				changeWeather() {
+		WeatherProvider.changeWeather();
 	}
 }

@@ -1,4 +1,4 @@
-package src.com.fdexheim;
+package src.com.fdexheim.avajlauncherflyers;
 
 public class Coordinates {
 	private int		longitude;
@@ -16,7 +16,7 @@ public class Coordinates {
 	public void		adjustLatitude(int latitude) { this.latitude += latitude; }
 	public void		adjustHeight(int height) { this.height += height; }
 
-	public Coordinates(int longitude, int latitude, int height) {
+	Coordinates(int longitude, int latitude, int height) {
 		this.longitude = Math.max(0, longitude);
 		this.latitude = Math.max(0, latitude);
 		if (height > 100)
