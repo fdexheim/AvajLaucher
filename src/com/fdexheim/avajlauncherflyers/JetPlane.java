@@ -39,6 +39,7 @@ public class JetPlane extends Aircraft implements Flyable {
 		if (this.coordinates.getHeight() > 100)
 			this.coordinates.setHeight(100);
 		if (this.coordinates.getHeight() <= 0) {
+			AvajLauncherLog.getLog().addLog("JetPlane#" + name + "(" + Long.toString(id) + "): HEAVY. We. are. ready. to. land.\n");
 			AvajLauncherLog.getLog().addLog("Tower says: JetPlane#" + name + "(" + Long.toString(id) + ") unregistered from weather tower.\n");
 			this.coordinates.setHeight(0);
 			weatherTower.unregister(this);

@@ -35,12 +35,6 @@ echo "--Simulation.txt--"
 cat Simulation.txt
 echo ""
 
-echo "[---TEST BAD ITER 2---]"
-java src.com.fdexheim.Simulator scenarios/scenarioBadIter2.txt
-echo "--Simulation.txt--"
-cat Simulation.txt
-echo ""
-
 echo "[---TEST SIMULATION FILE ACCESS---]"
 chmod 444 Simulation.txt
 java src.com.fdexheim.Simulator scenarios/scenarioB.txt

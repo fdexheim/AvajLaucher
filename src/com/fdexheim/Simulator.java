@@ -41,7 +41,7 @@ public class Simulator
 			ret = -1;
 		}
 		if (ret < 0)
-			throw new BadScenarioFileException("Invalid Scenario File : Iteration number '" + line + "' is either badly fornatted or below zero");
+			throw new BadScenarioFileException("Invalid Scenario File : Iteration number '" + line + "' is either badly formatted or below zero");
 		return (ret);
 	}
 
@@ -61,7 +61,7 @@ public class Simulator
 				lineNumber++;
 				splitLine = line.split(" ");
 				if (splitLine.length != 5)
-					throw new BadScenarioFileException("Invalid Scenario file : Incorrect number of arguments for aircraft creation, requires 5, have " + Integer.toString(splitLine.length));
+					throw new BadScenarioFileException("Invalid Scenario file : line " + Integer.toString(lineNumber) + " : Incorrect number of arguments for aircraft creation, requires 5, have " + Integer.toString(splitLine.length));
 				try { 
 					type = splitLine[0];
 					name = splitLine[1];
@@ -113,22 +113,22 @@ public class Simulator
 			lineReader = new BufferedReader(simulationFile);
 			simulatorIterations = parseIters();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage()); 
 			System.exit(-1);
 		} catch (BadScenarioFileException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage()); 
 			System.exit(-1);
 		}
 		try {
 			parseAircrafts();
 		} catch (BadScenarioFileException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage()); 
 			System.exit(-1);
 		} catch (BadFileAccessException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage()); 
 			System.exit(-1);
 		} catch (BadAircraftTypeException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage()); 
 			System.exit(-1);
 		}
 		runSimulation();

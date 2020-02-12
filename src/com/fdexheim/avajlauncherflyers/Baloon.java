@@ -39,6 +39,7 @@ public class Baloon extends Aircraft implements Flyable {
 		if (this.coordinates.getHeight() > 100)
 			this.coordinates.setHeight(100);
 		if (this.coordinates.getHeight() <= 0) {
+			AvajLauncherLog.getLog().addLog("Baloon#" + name + "(" + Long.toString(id) + "): HORY SHEEET Damn the enemy, we shall finish this on foot\n");
 			AvajLauncherLog.getLog().addLog("Tower says: Baloon#" + name + "(" + Long.toString(id) + ") unregistered from weather tower.\n");
 			this.coordinates.setHeight(0);
 			weatherTower.unregister(this);
